@@ -1,0 +1,1 @@
+#poll is my application, written at same level as manage.py runserver
