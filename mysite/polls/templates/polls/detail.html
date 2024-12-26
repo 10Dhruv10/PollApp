@@ -1,0 +1,15 @@
+<h1> {{ q }} </h1>
+<ul>
+    {% for choice in q.choice_set.all %}
+        <li>
+            {{ choice.choice_text }}
+        </li>
+    {% endfor %}
+</ul>
+
+{% comment %} as q is a single object coming from views.py {% endcomment %}
+{% comment %} using {{ }} on it will return str function of its model {% endcomment %}
+{% comment %} here str func of Question model gives question_text {% endcomment %}
+
+{% comment %} q.choice_set.all gives all rows in Choice with pk=question_id {% endcomment %}
+{% comment %} q is a single object of Question, q.choice_set.all is a query set of many objects of Choice {% endcomment %}
