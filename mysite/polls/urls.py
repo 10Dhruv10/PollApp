@@ -7,7 +7,7 @@ app_name = "polls"
 urlpatterns = [
     path("", views.index, name="index"),
     path("<int:question_id>/", views.detail, name="detail"),
-    path("<int:question_id>/results/", views.results, name="result"),
+    path("<int:question_id>/results/", views.results, name="results"),
     path("<int:question_id>/vote/", views.vote, name="vote"),
 ]
 
@@ -30,3 +30,5 @@ urlpatterns = [
 #app_name ="polls" added to avoid same name url of different application in same project issue
 #polls and polls2 both have name="detail" and i want to use detail of polls as of now
 #in details.html I can write 'polls:detail' 
+
+#we can refer to links like "polls/question_id/results" as "polls:results question_id" i.e. (app_name: name of url)

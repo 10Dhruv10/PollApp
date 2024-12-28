@@ -1,11 +1,32 @@
-<h1> {{ q }} </h1>
+<form action ="{% url 'polls:vote' q.id %}" method = "POST">
+
+    {% csrf_token %}
+    <fieldset> 
+        <legend> <h2> {{q.question_text}} </h2> </legend>
+
+        {% if error_message %}   
+            <p><strong>{{ error_message }}</strong></p>
+        {% endif %}
+
+        {% for c in q.choice_set.all %}  
+            <input type="radio" name="my_choice" id="{{forloop.counter}}" value = "{{ c.id }}" >
+            <label for="{{ forloop.counter }}"> {{c.choice_text}} </label> <br>
+        {% endfor %}
+
+    </fieldset> <br>
+    <input type="submit" value = "click this to vote here">
+</form> 
+
+
+
+{% comment %} <h1> {{ q }} </h1>
 <ul>
     {% for choice in q.choice_set.all %}
         <li>
             {{ choice.choice_text }}
         </li>
     {% endfor %}
-</ul>
+</ul>  {% endcomment %}
 
 {% comment %} as q is a single object coming from views.py {% endcomment %}
 {% comment %} using {{ }} on it will return str function of its model {% endcomment %}
@@ -13,3 +34,23 @@
 
 {% comment %} q.choice_set.all gives all rows in Choice with pk=question_id {% endcomment %}
 {% comment %} q is a single object of Question, q.choice_set.all is a query set of many objects of Choice {% endcomment %}
+
+
+{% comment %} 
+
+1. form action data posted will be sent to url link 
+2. model name is Choice but will have choice_set and not Choice_set 
+3. radio button means user only gets to select one choice, forloop.counter is index
+
+4. value can be different, for "submit" value means the text showing on submit button
+    for other buttons like radio, each button has a value & if 
+    user select choice of id=2 when form is submitted then value=2 is sent
+
+5. name="my_choice" id="{{forloop.counter}}" value = "{{ c.id }}" all this stuff is for 
+    internal purpose, the rest stuff in that for loop is seen by client
+
+6. fieldset make all those stuff inside it in a box or field and legend is like box's title/description
+
+7. error_message  comes from views.py
+
+{% endcomment %}

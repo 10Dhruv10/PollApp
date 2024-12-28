@@ -1,6 +1,8 @@
-from django.http import HttpResponse;
+from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404
-from .models import Question
+from .models import Question, Choice
+from django.db.models import F
+from django.urls import reverse
 
 
 def index(request):
@@ -17,11 +19,26 @@ def detail(request, question_id):
     # return HttpResponse("Your are viewing details of %s" % question_id)
 
 def results(request, question_id):                #question_id comes from urls.py
-    return HttpResponse("You are viewing results of %s" % question_id)
+    question = get_object_or_404(Question, pk=question_id)
+    context = {"question" : question}
+    return render(request, "polls/results.html", context)
 
 def vote(request, question_id):
-    temp = "You are viewing votes for %s"
-    return HttpResponse(temp % question_id)
+    question = get_object_or_404(Question, pk=question_id)
+    
+    try:
+        selected = question.choice_set.get(pk=request.POST["my_choice"])
+        
+    except(KeyError, Choice.DoesNotExist):
+        context = {"q":question, "error_message": "You didnt select a choice"}
+        return render(request, "polls/detail.html", context)
+    
+    else:
+        selected.votes = F("votes") + 1
+        selected.save()
+        
+        return HttpResponseRedirect( reverse ("polls:results", args=(question_id,)) )     #args is a tuple
+        
     
     
 #request is an instance (object in java) of HttpRequest
@@ -41,3 +58,20 @@ def vote(request, question_id):
 
 #list_entries_list and q are actually objects of Question model i.e.
 #queryset (collection of objects) and a single object
+
+#F is used to perform calculation in DB which is faster
+#Key error -> no such id exists, Choice.DoesNotExist -> id exists but no choice, user alter id of existing choices using insepct element
+
+"""
+Suppose we change our results in urls.py and make it polls/smth/question_id/results then we will
+need to update everywhere we are referencing results in our code if it is like poll/question_id/results
+but using reverse we can avoid this and will only need to make change in urls.py
+
+HttpResponseRedirect with reverse does same as {% url 'polls:results' question_id %}
+one is used for making a redirecting url for html files and other for views.py
+
+After dealing with post data its a good practice to send user to other page as keeping them on 
+same page possess a risk because if they resubmit it or click back button this would lead to extra 
+addition of votes so we use "HttpResponseRedirect"
+       
+"""
