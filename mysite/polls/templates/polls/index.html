@@ -1,10 +1,10 @@
 {% if latest_entries_list %}
     <ul>
-        {% for q in latest_entries_list %}
+        {% for ques in latest_entries_list %}
             <li>
                 {% comment %} <a href="/polls/{{ question.id }}/">{{ question.question_text }}</a> {% endcomment %}
-                <a href="{% url 'polls:detail' question_id %}">
-                    {{ q.question_text }}     
+                <a href="{% url 'polls:detail' ques.id %}">
+                    {{ ques.question_text }}     
                 </a>    
             </li>    
         {% endfor %}
