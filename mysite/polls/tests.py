@@ -59,7 +59,7 @@ class QuestionModelTests(TestCase):
         200
         
 >>> response.context["latest_entries_list"]
-        <QuerySet [<Question: Yo Man>, <Question: Sup>, <Question: hi>]>      
+        <QuerySet [<Question: Yo Man>, <Question: Sup>, <Question: hi>]>       #these are objects
 >>> response.content
         b'\n    <ul>\n    \n        <li><a href="/polls/1/">What&#x27;s up?</a></li>\n    \n    </ul>\n\n'
 '''
@@ -67,3 +67,35 @@ class QuestionModelTests(TestCase):
 #200 means all good
 #404 is error
 #301 means url lacks a trailing slash in .get() and it adds one itself and check if that link exixts, if it foes 301 is returned else Not Found:
+
+
+
+
+def create_question(question_text, days):
+    """
+    Create a question with the given `question_text` and published the
+    given number of `days` offset to now (negative for questions published
+    in the past, positive for questions that have yet to be published).
+    """
+    time = timezone.now() + datetime.timedelta(days=days)
+    return Question.objects.create(question_text=question_text, pub_date=time)
+
+from django.urls import reverse
+class QuestionIndexViewTests(TestCase):
+
+    def test_past_question(self):
+        """
+        Questions with a pub_date in the past are displayed on the
+        index page.
+        """
+        question = create_question(question_text="Past question.", days=-30)
+        response = self.client.get(reverse("polls:index"))
+        self.assertQuerySetEqual(
+            response.context["latest_entries_list"],
+            [question],
+        )
+        
+# client.get can show status code, content, context of views.py
+# we need to use [] with question in (response.context["latest_entries_list"],[question],)
+# because if question had multiple objects and each needed to be compared with this context's objects then we need to use [] because a list no comparison will happen
+# question has models __str__ result and so does latest_entries_list 
