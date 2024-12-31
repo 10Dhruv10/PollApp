@@ -3,10 +3,12 @@ from django.shortcuts import render, get_object_or_404
 from .models import Question, Choice
 from django.db.models import F
 from django.urls import reverse
+from django.utils import timezone
 
 
 def index(request):
-    latest_entries_list = Question.objects.order_by("-pub_date")[:5]
+    # latest_entries_list = Question.objects.order_by("-pub_date")[:5]    #it has all __str__() results i.e. question_text 
+    latest_entries_list = Question.objects.filter(pub_date__lte=timezone.now()).order_by("-pub_date")[:5]    #__lte is Less Than or Equal to
     context = { "latest_entries_list" : latest_entries_list }
     return render(request, "polls/index.html", context)
 
