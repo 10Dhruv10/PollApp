@@ -18,6 +18,8 @@ class QuestionModelTests(TestCase):
 #self.assertIs checks if result of q.was_published_recently() is False,
 #lets fix our models was_published_recently() function
 
+#tests designed to deal with all 3 time possibilities
+
     def test_past_questions(self):
         published = timezone.now() - datetime.timedelta(days=1, seconds=1)
         q = Question(pub_date = published)
@@ -30,7 +32,7 @@ class QuestionModelTests(TestCase):
         
         self.assertIs(q.was_published_recently(), True)
 
-#tests designed to deal with all 3 time possibilities
+
 
 
 '''
@@ -68,34 +70,40 @@ class QuestionModelTests(TestCase):
 #404 is error
 #301 means url lacks a trailing slash in .get() and it adds one itself and check if that link exixts, if it foes 301 is returned else Not Found:
 
-
-
-
-def create_question(question_text, days):
-    """
-    Create a question with the given `question_text` and published the
-    given number of `days` offset to now (negative for questions published
-    in the past, positive for questions that have yet to be published).
-    """
-    time = timezone.now() + datetime.timedelta(days=days)
-    return Question.objects.create(question_text=question_text, pub_date=time)
-
-from django.urls import reverse
-class QuestionIndexViewTests(TestCase):
-
-    def test_past_question(self):
-        """
-        Questions with a pub_date in the past are displayed on the
-        index page.
-        """
-        question = create_question(question_text="Past question.", days=-30)
-        response = self.client.get(reverse("polls:index"))
-        self.assertQuerySetEqual(
-            response.context["latest_entries_list"],
-            [question],
-        )
-        
+                        
 # client.get can show status code, content, context of views.py
 # we need to use [] with question in (response.context["latest_entries_list"],[question],)
 # because if question had multiple objects and each needed to be compared with this context's objects then we need to use [] because a list no comparison will happen
 # question has models __str__ result and so does latest_entries_list 
+
+
+
+
+from django.urls import reverse
+
+def CreateQuestion(question_text, pub_date):
+       
+       return Question.objects.create(question_text = question_text, pub_date = pub_date)
+
+class QuestionIndexViewTests(TestCase):
+        def test_past(self):
+                obj = CreateQuestion(question_text = "PastQ", pub_date = timezone.now() - datetime.timedelta(days=1))
+                
+                response = self.client.get(reverse("polls:index"))
+                self.assertQuerySetEqual( response.context["latest_entries_list"] , [obj] )
+                
+        def test_future(self):
+                obj = CreateQuestion(question_text = "FutureQ", pub_date = timezone.now() + datetime.timedelta(days = 1))
+                
+                response = self.client.get(reverse("polls:index"))
+                self.assertQuerySetEqual(response.context["latest_entries_list"], [])
+        
+        # def test_two_past(self):
+        #         obj = CreateQuestion(questio)
+        
+        # def test_present(self):
+        #         obj = CreateQuestion(question_text = "recentQ", pub_date = timezone.now())
+                
+        #         response = self.client.get(reverse("polls:index"))
+        #         self.assertQuerySetEqual(response.context["latest_entries_list"], [obj])
+                
