@@ -1,4 +1,4 @@
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.shortcuts import render, get_object_or_404
 from .models import Question, Choice
 from django.db.models import F
@@ -16,6 +16,10 @@ def index(request):
 def detail(request, question_id):
     q = get_object_or_404(Question, pk=question_id)   #take object of pk from Question
     context = {"q" : q}
+    
+    if q.pub_date > timezone.now():
+        raise Http404("Question not availiable yet") 
+    
     return render(request, "polls/detail.html", context)
     # question = Question.objects.get(pk=question.id)
     # return HttpResponse("Your are viewing details of %s" % question_id)
@@ -63,6 +67,7 @@ def vote(request, question_id):
 
 #F is used to perform calculation in DB which is faster
 #Key error -> no such id exists, Choice.DoesNotExist -> id exists but no choice, user alter id of existing choices using insepct element
+#arguments are passed separately for results function -> reverse ("polls:results", args=(question_id,))
 
 """
 Suppose we change our results in urls.py and make it polls/smth/question_id/results then we will
