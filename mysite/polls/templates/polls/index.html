@@ -1,3 +1,7 @@
+{% load static %}   {% comment %} loads django static library {% endcomment %}
+<link rel="stylesheet" href="{% static 'polls/style.css' %}">  {% comment %} we are connecting index.html to style.css {% endcomment %}
+
+
 {% if latest_entries_list %}
     <ul>
         {% for ques in latest_entries_list %}
