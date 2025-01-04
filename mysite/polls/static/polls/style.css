@@ -1,0 +1,15 @@
+
+li a {
+    color: green;   /* targets all anchor tag <a> inside <li> */
+}
+
+body {
+    background: #7E61AB url("images/cool-background.png") no-repeat;
+}
+
+/* no repeat means image dont repeat in localhost, i.e. only once */
+
+/* we make polls inside as well in static/polls/style.css because if we had 2 or more apps django will search 
+for static in all apps and if it finds static that static is used for all which shouldn't be happening */
+/* this static 'url' way of writing is only with django and css/js files and to link 2 css etc files use relative paths like url("images/cool-background.png") */
+/* e.g. in our index.html we did "static 'polls/style.css'" that tells it to use speficially the polls/style.css inside static folder somewhere */
