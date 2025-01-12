@@ -6,7 +6,7 @@ from .models import Question, Choice
 # admin.site.register(Question)
 #This tell django to add Question to admin panel 
 
-class ChoiceInline(admin.TabularInline):
+class ChoiceInline(admin.TabularInline):              #inline let us manage records of child(Choice) on parents side(Question)
     model = Choice
     extra = 4                                         #No of times i want to see choice
     
@@ -20,9 +20,9 @@ class QuestionAdmin(admin.ModelAdmin):
     
     inlines = [ChoiceInline]
     
-    list_display = ["question_text", "pub_date", "was_published_recently"]
-    
-
+    list_display = ["question_text", "pub_date", "decorator_method_only"]
+    list_filter = ["pub_date"]                                            #add a small filter menu on right side, if the field is weird like text it will only show texts and not have its own logic like in case of date
+    search_fields = ["question_text", "pub_date"]                         #add a searching bar, indivually or by both (try <hi 2024>)       #'like' query of sql
 
 admin.site.register(Question, QuestionAdmin)
 #(model_name, adminclass_name)
